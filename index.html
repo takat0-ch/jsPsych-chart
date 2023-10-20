@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/jspsych@7.3.3"></script>
     <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" type="text/css" />
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://unpkg.com/@jspsych/plugin-canvas-button-response@1.1.2"></script>
 
@@ -24,6 +25,11 @@
 
     const timeline = [];
 
+    const ins = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: '<p>Demoを始める。</p>',
+        choices: ['Start']
+    };
 
     const fix = {
         type: jsPsychHtmlKeyboardResponse,
@@ -122,7 +128,7 @@
 
 
 
-    timeline.push(procedures, chart1, chart2);
+    timeline.push(ins, procedures, chart1, chart2);
     jsPsych.run(timeline);
 
 </script>
