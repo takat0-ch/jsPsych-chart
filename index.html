@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@7.3.3"></script>
+    <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-canvas-button-response@1.1.2"></script>
+
+
+</head>
+
+<body></body>
+<script>
+    /* initialize jsPsych */
+    const jsPsych = initJsPsych({
+        on_finish: function () {
+            jsPsych.data.displayData();
+        }
+    });
+
+    const timeline = [];
+
+
+    const fix = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: '<p style = "font-size: 24px;">+</p>',
+        choices: "NO_KEYS",
+        trial_duration: 1000
+    }
+    const trial = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "<p>FかJのどちらかを入力してください。</p>",
+        choices: ["f", "j"],
+        data: {
+            task: 'response'
+        },
+        on_finish: function (data) {
+            data.Fkey = jsPsych.pluginAPI.compareKeys(data.response, 'F');
+            data.Jkey = jsPsych.pluginAPI.compareKeys(data.response, 'J');
+        }
+
+    };
+
+
+
+
+    const procedures = {
+        timeline: [fix, trial],
+        repetitions: 10,
+        on_finish: function () {
+            trials = jsPsych.data.get().filter({ task: 'response' });
+            Fkey_trials = trials.filter({ Fkey: true });
+            Jkey_trials = trials.filter({ Jkey: true });
+            FkeyCount = Fkey_trials.count();
+            JkeyCount = 10 - FkeyCount
+            Frt = Math.round(Fkey_trials.select('rt').mean());
+            Jrt = Math.round(Jkey_trials.select('rt').mean());
+        }
+    };
+
+    function piechart(c, F, J) {
+        var ctx = c.getContext("2d");
+        let pieConfig = {
+          type: 'pie',
+          data: {
+            labels: ['Fkey','Jkey'],
+            datasets: [{
+              label: 'キー押し回数',
+              data: [F, J],
+              backgroundColor: [
+                '#ff0000',
+                '#0000ff',
+              ]
+            }]
+          },
+        };
+        let pieChart = new Chart(ctx, pieConfig);
+    }
+
+    function barchart(c, F, J) {
+        var ctx = c.getContext("2d");
+        let barConfig = {
+          type: 'bar',
+          data: {
+            labels: ['Fkey','Jkey'],
+            datasets: [{
+              label: '平均反応時間(ms)',
+              data: [Frt, Jrt],
+              backgroundColor: [
+                '#ff0000',
+                '#0000ff',
+              ]
+            }]
+          },
+        };
+        let barChart = new Chart(ctx, barConfig);
+    }
+
+    var chart1 = {
+        type: jsPsychCanvasButtonResponse,
+        stimulus: function(c) {
+            piechart(c, FkeyCount, JkeyCount)
+        },
+        canvas_size: [500, 500],
+        choices: ['棒グラフに進む'],
+        prompt: '<p>キー押し回数のpie chartはこんな感じ</p>'
+    };
+
+    var chart2 = {
+        type: jsPsychCanvasButtonResponse,
+        stimulus: function(c) {
+            barchart(c, Frt, Jrt)
+        },
+        canvas_size: [500, 500],
+        choices: ['終了する'],
+        prompt: '<p>それぞれのキー押しの平均反応時間はこんな感じ</p>'
+    };
+
+
+
+    timeline.push(procedures, chart1, chart2);
+    jsPsych.run(timeline);
+
+</script>
+
+
+</html>
