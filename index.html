@@ -33,10 +33,11 @@
 
     const fix = {
         type: jsPsychHtmlKeyboardResponse,
-        stimulus: '<p style = "font-size: 24px;">+</p>',
+        stimulus: '',
         choices: "NO_KEYS",
         trial_duration: 1000
     }
+    
     const trial = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: "<p>FかJのどちらかを入力してください。</p>",
@@ -62,7 +63,7 @@
             Fkey_trials = trials.filter({ Fkey: true });
             Jkey_trials = trials.filter({ Jkey: true });
             FkeyCount = Fkey_trials.count();
-            JkeyCount = 10 - FkeyCount
+            JkeyCount = Jkey_trials.count();
             Frt = Math.round(Fkey_trials.select('rt').mean());
             Jrt = Math.round(Jkey_trials.select('rt').mean());
         }
